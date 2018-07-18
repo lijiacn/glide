@@ -105,8 +105,11 @@ public final class MemorySizeCalculator {
 
   private static int getMaxSize(ActivityManager activityManager, float maxSizeMultiplier,
       float lowMemoryMaxSizeMultiplier) {
+    //每个进程的最大可用内存
     final int memoryClassBytes = activityManager.getMemoryClass() * 1024 * 1024;
+    //判断是否是低内存设备,低版本系统(低于4.4)的手机默认是true
     final boolean isLowMemoryDevice = isLowMemoryDevice(activityManager);
+    //如果是低内存设备则最多使用内存的33% 否则可以使用40%
     return Math.round(memoryClassBytes * (isLowMemoryDevice ? lowMemoryMaxSizeMultiplier
         : maxSizeMultiplier));
   }
@@ -115,6 +118,7 @@ public final class MemorySizeCalculator {
     return Formatter.formatFileSize(context, bytes);
   }
 
+  //是否是低内存设备
   @TargetApi(Build.VERSION_CODES.KITKAT)
   @Synthetic static boolean isLowMemoryDevice(ActivityManager activityManager) {
     // Explicitly check with an if statement, on some devices both parts of boolean expressions

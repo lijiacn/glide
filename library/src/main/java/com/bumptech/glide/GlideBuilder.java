@@ -428,7 +428,9 @@ public final class GlideBuilder {
     if (engine == null) {
       engine =
           new Engine(
+              //内存缓存
               memoryCache,
+              //本地缓存
               diskCacheFactory,
               diskCacheExecutor,
               sourceExecutor,
@@ -442,7 +444,9 @@ public final class GlideBuilder {
 
     return new Glide(
         context,
+        //引擎类
         engine,
+        //内存缓存
         memoryCache,
         bitmapPool,
         arrayPool,
