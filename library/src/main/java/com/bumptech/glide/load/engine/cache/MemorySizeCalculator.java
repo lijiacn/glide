@@ -21,7 +21,6 @@ public final class MemorySizeCalculator {
   @VisibleForTesting
   static final int BYTES_PER_ARGB_8888_PIXEL = 4;
   private static final int LOW_MEMORY_BYTE_ARRAY_POOL_DIVISOR = 2;
-
   private final int bitmapPoolSize;
   private final int memoryCacheSize;
   private final Context context;
@@ -50,13 +49,14 @@ public final class MemorySizeCalculator {
     int heightPixels = builder.screenDimensions.getHeightPixels();
     //screenSize = 宽度*高度*4
     int screenSize = widthPixels * heightPixels * BYTES_PER_ARGB_8888_PIXEL;
-    //bitmapPool大小 =屏幕尺寸*图片的大小(四舍五入),在8.0的系统上有特殊处理
+    //bitmapPool大小 =屏幕尺寸*图片的大小(四舍五入),在8.0的系统上有特殊处理,小于8.0的系统默认为 4
     int targetBitmapPoolSize = Math.round(screenSize * builder.bitmapPoolScreens);
     //MemoryCache大小 = 屏幕尺寸*2 (四舍五入),默认为 2
     int targetMemoryCacheSize = Math.round(screenSize * builder.memoryCacheScreens);
     //可用大小 = 最大可用内存-arrayPoolSize的大小
     int availableSize = maxSize - arrayPoolSize;
 
+    //计算内存大小和bitmapPool
     if (targetMemoryCacheSize + targetBitmapPoolSize <= availableSize) {
       memoryCacheSize = targetMemoryCacheSize;
       bitmapPoolSize = targetBitmapPoolSize;

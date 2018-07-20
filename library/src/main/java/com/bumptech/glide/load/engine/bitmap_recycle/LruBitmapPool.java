@@ -27,6 +27,7 @@ public class LruBitmapPool implements BitmapPool {
   private final LruPoolStrategy strategy;
   private final Set<Bitmap.Config> allowedConfigs;
   private final long initialMaxSize;
+  /**bitmap跟踪器**/
   private final BitmapTracker tracker;
 
   private long maxSize;
@@ -259,6 +260,10 @@ public class LruBitmapPool implements BitmapPool {
         + ", currentSize=" + currentSize + ", maxSize=" + maxSize + "\nStrategy=" + strategy);
   }
 
+  /**
+   * 创建默认的bitmap缓存
+   * @return
+   */
   private static LruPoolStrategy getDefaultStrategy() {
     final LruPoolStrategy strategy;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

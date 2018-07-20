@@ -409,6 +409,7 @@ public final class GlideBuilder {
       if (size > 0) {
         bitmapPool = new LruBitmapPool(size);
       } else {
+        //如果计算出的bitmapPool大小是0,则不保存到缓存中,调用get方法会返回空的bitmap
         bitmapPool = new BitmapPoolAdapter();
       }
     }

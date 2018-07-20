@@ -22,16 +22,20 @@ class GroupedLinkedMap<K extends Poolable, V> {
   private final Map<K, LinkedEntry<K, V>> keyToEntry = new HashMap<>();
 
   public void put(K key, V value) {
+    //根据key获取对象
     LinkedEntry<K, V> entry = keyToEntry.get(key);
-
+    //如果entry不存在
     if (entry == null) {
       entry = new LinkedEntry<>(key);
+      //添加到entry的双链表中
       makeTail(entry);
+      //添加到hash map
       keyToEntry.put(key, entry);
     } else {
+      //添加元素
       key.offer();
     }
-
+    //添加到entry的list中
     entry.add(value);
   }
 
@@ -103,9 +107,12 @@ class GroupedLinkedMap<K extends Poolable, V> {
 
   // Make the entry the least recently used item.
   private void makeTail(LinkedEntry<K, V> entry) {
+    //从双向链表删除entry
     removeEntry(entry);
+    //将entry添加到双链表的头部位置
     entry.prev = head.prev;
     entry.next = head;
+    //连接双链表的上一个entry和下一个entry
     updateEntry(entry);
   }
 
@@ -119,6 +126,11 @@ class GroupedLinkedMap<K extends Poolable, V> {
     entry.next.prev = entry.prev;
   }
 
+  /**
+   * 双链表
+   * @param <K>
+   * @param <V>
+   */
   private static class LinkedEntry<K, V> {
     @Synthetic final K key;
     private List<V> values;
