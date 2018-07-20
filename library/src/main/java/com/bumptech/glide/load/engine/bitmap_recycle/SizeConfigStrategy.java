@@ -62,7 +62,7 @@ public class SizeConfigStrategy implements LruPoolStrategy {
   public void put(Bitmap bitmap) {
     //获取将要保存的图片的大小
     int size = Util.getBitmapByteSize(bitmap);
-    //根据图片的大小生成唯一的key
+    //根据图片的大小 生成key,为什么要根据大小生成key(方便bitmap的复用??)
     Key key = keyPool.get(size, bitmap.getConfig());
 
     groupedMap.put(key, bitmap);
