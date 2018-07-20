@@ -97,6 +97,7 @@ public class RequestManagerRetriever implements Handler.Callback {
           applicationManager =
               factory.build(
                   glide,
+                  //自定义周期函数 包括addListener和removeListener两个方法
                   new ApplicationLifecycle(),
                   new EmptyRequestManagerTreeNode(),
                   context.getApplicationContext());
@@ -107,6 +108,11 @@ public class RequestManagerRetriever implements Handler.Callback {
     return applicationManager;
   }
 
+  /**
+   * 根据不同的context类型执行不同的代码
+   * @param context
+   * @return
+   */
   @NonNull
   public RequestManager get(@NonNull Context context) {
     if (context == null) {
@@ -126,6 +132,7 @@ public class RequestManagerRetriever implements Handler.Callback {
 
   @NonNull
   public RequestManager get(@NonNull FragmentActivity activity) {
+    //如果不在主线程则使用applicationContext加载
     if (Util.isOnBackgroundThread()) {
       return get(activity.getApplicationContext());
     } else {
@@ -414,6 +421,7 @@ public class RequestManagerRetriever implements Handler.Callback {
       if (current == null) {
         current = new SupportRequestManagerFragment();
         current.setParentFragmentHint(parentHint);
+        //判断activity是否显示
         if (isParentVisible) {
           current.getGlideLifecycle().onStart();
         }
@@ -426,14 +434,12 @@ public class RequestManagerRetriever implements Handler.Callback {
   }
 
   @NonNull
-  private RequestManager supportFragmentGet(
-      @NonNull Context context,
-      @NonNull FragmentManager fm,
-      @Nullable Fragment parentHint,
-      boolean isParentVisible) {
-    SupportRequestManagerFragment current =
-        getSupportRequestManagerFragment(fm, parentHint, isParentVisible);
+  private RequestManager supportFragmentGet(@NonNull Context context, @NonNull FragmentManager fm,
+      @Nullable Fragment parentHint, boolean isParentVisible) {
+
+    SupportRequestManagerFragment current = getSupportRequestManagerFragment(fm, parentHint, isParentVisible);
     RequestManager requestManager = current.getRequestManager();
+
     if (requestManager == null) {
       // TODO(b/27524013): Factor out this Glide.get() call.
       Glide glide = Glide.get(context);
@@ -483,6 +489,9 @@ public class RequestManagerRetriever implements Handler.Callback {
         @NonNull Context context);
   }
 
+  /**
+   * 默认的实现类
+   */
   private static final RequestManagerFactory DEFAULT_FACTORY = new RequestManagerFactory() {
     @NonNull
     @Override

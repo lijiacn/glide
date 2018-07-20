@@ -14,6 +14,7 @@ import com.bumptech.glide.util.Synthetic;
 /**
  * A calculator that tries to intelligently determine cache sizes for a given device based on some
  * constants and the devices screen density, width, and height.
+ * 内存计算器,会根据设备屏幕密度,宽度,高度来确定缓存的大小
  */
 public final class MemorySizeCalculator {
   private static final String TAG = "MemorySizeCalculator";
@@ -34,22 +35,26 @@ public final class MemorySizeCalculator {
   // Package private to avoid PMD warning.
   MemorySizeCalculator(MemorySizeCalculator.Builder builder) {
     this.context = builder.context;
-
-    arrayPoolSize =
-        isLowMemoryDevice(builder.activityManager)
+    //数组池的大小
+    arrayPoolSize = isLowMemoryDevice(builder.activityManager)
+            //如果是低内存设备,默认为4M/2=2M
             ? builder.arrayPoolSizeBytes / LOW_MEMORY_BYTE_ARRAY_POOL_DIVISOR
+            //高内存设备默认为4M
             : builder.arrayPoolSizeBytes;
+
+    //计算最大的可以使用内存
     int maxSize =
-        getMaxSize(
-            builder.activityManager, builder.maxSizeMultiplier, builder.lowMemoryMaxSizeMultiplier);
+        getMaxSize(builder.activityManager, builder.maxSizeMultiplier, builder.lowMemoryMaxSizeMultiplier);
 
     int widthPixels = builder.screenDimensions.getWidthPixels();
     int heightPixels = builder.screenDimensions.getHeightPixels();
+    //screenSize = 宽度*高度*4
     int screenSize = widthPixels * heightPixels * BYTES_PER_ARGB_8888_PIXEL;
-
+    //bitmapPool大小 =屏幕尺寸*图片的大小(四舍五入),在8.0的系统上有特殊处理
     int targetBitmapPoolSize = Math.round(screenSize * builder.bitmapPoolScreens);
-
+    //MemoryCache大小 = 屏幕尺寸*2 (四舍五入),默认为 2
     int targetMemoryCacheSize = Math.round(screenSize * builder.memoryCacheScreens);
+    //可用大小 = 最大可用内存-arrayPoolSize的大小
     int availableSize = maxSize - arrayPoolSize;
 
     if (targetMemoryCacheSize + targetBitmapPoolSize <= availableSize) {
@@ -158,6 +163,7 @@ public final class MemorySizeCalculator {
 
     // Modifiable (non-final) for testing.
     @Synthetic ActivityManager activityManager;
+    //屏幕分辨率类
     @Synthetic ScreenDimensions screenDimensions;
 
     @Synthetic float memoryCacheScreens = MEMORY_CACHE_TARGET_SCREENS;
@@ -265,6 +271,9 @@ public final class MemorySizeCalculator {
     }
   }
 
+  /**
+   * 屏幕分辨率管理类
+   */
   private static final class DisplayMetricsScreenDimensions implements ScreenDimensions {
     private final DisplayMetrics displayMetrics;
 
